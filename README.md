@@ -23,17 +23,17 @@ Tweener.addTween( _mesh,
 
 ## Method
 
-```Tweener.init();```
+**```Tweener.init();```**
 
 全ての状態の初期化。  
 コンテンツ中にTwennerを使う前に一度使用。
 
-```Tweener.dispose();```
+**```Tweener.dispose();```**
 
 全ての状態の破棄。  
 Twenner を終了させる（使用しない）時に使用。
 
-```Tweener.addTween( _instance:Object3D, props:Object );```
+**```Tweener.addTween( _instance:Object3D, props:Object );```**
 
 Tweenの追加と自動実行
 
@@ -49,27 +49,27 @@ props
   onComplete: Function (CALLBACK)  
   
 
-```Tweener.removeTween( _instance:Object3D );```
+**```Tweener.removeTween( _instance:Object3D );```**
 
 指定したObject3DにかかわるTweenを削除
 
-```Tweener.clearAllTweens();```
+**```Tweener.clearAllTweens();```**
 
 実行中の全てのTweenを削除する
 
-```Tweener.pauseTween( _instance:Object3D );```
+**```Tweener.pauseTween( _instance:Object3D );```**
 
 指定したObject3DにかかわるTweenを停止する
 
-```Tweener.playTween( _instance:Object3D );```
+**```Tweener.playTween( _instance:Object3D );```**
 
 指定したObject3Dに関わるTweenを再開する
 
-```Tweener.pauseAllTweens();```
+**```Tweener.pauseAllTweens();```**
 
 全てのTweenを停止する
 
-```Tweener.playAllTweens();```
+**```Tweener.playAllTweens();```**
 
 全てのTweenを再開する
 
