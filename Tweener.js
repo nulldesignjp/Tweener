@@ -1,7 +1,6 @@
 /*
   Tweener.js
   ver 2.0.0
-  tw: @nulldesign
 */
 
 export default class Tweener{
@@ -398,7 +397,7 @@ Tweener.removeTween = ( _instance ) =>
     }
   }
 }
-Tweener.clearTweens = () =>
+Tweener.clearAllTweens = () =>
 {
   let len = Tweener.useList.lnngth;
   while( len )
@@ -437,7 +436,7 @@ Tweener.playTween = ( _instance ) =>
     }
   }
 }
-Tweener.pauseAllTweens = ( _instance ) =>
+Tweener.pauseAllTweens = () =>
 {
   let len = Tweener.useList.length;
   while( len )
@@ -446,7 +445,7 @@ Tweener.pauseAllTweens = ( _instance ) =>
     Tweener.useList[len].isPlaying = false;
   }
 }
-Tweener.playAllTweens = ( _instance ) =>
+Tweener.playAllTweens = () =>
 {
   let len = Tweener.useList.length;
   while( len )
