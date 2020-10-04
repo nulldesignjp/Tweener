@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.0.0
+  ver 2.0.1
 */
 
 export default class Tweener{
@@ -377,10 +377,6 @@ Tweener.addTween = ( instance, props ) =>
 
   Tweener.useList.push( _p );
 
-  //  おまじない
-  window.cancelAnimationFrame( Tweener._props.loopKey );
-  Tweener._loop();
-
   return _p;
 }
 Tweener.removeTween = ( _instance ) =>
@@ -408,7 +404,6 @@ Tweener.clearAllTweens = () =>
     _p = null;
   }
   Tweener.useList = [];
-  window.cancelAnimationFrame( Tweener._props.loopKey );
 }
 Tweener.pauseTween = ( _instance ) =>
 {
@@ -458,33 +453,27 @@ Tweener._loop = () =>
 {
   Tweener._props.loopKey = window.requestAnimationFrame( Tweener._loop );
 
-  let len = Tweener.useList.length;
-  if( len <= 0 )
-  {
-    window.cancelAnimationFrame( Tweener._props.loopKey );
-    return;
-  }
-
   //  time
   let _current = new Date().getTime();
   let _delta = ( _current - Tweener._props.past ) / 1000;
   Tweener._props.past = _current;
 
-
+  let len = Tweener.useList.length;
   while( len )
   {
     len--;
     let _p = Tweener.useList[len]
+
+    if( !_p.isPlaying )
+    {
+      continue;
+    }
+
     if( _p.time - _p.delay <= _p.duration )
     {
       _p.time += _delta;
       let _time = _p.time - _p.delay;
       _time = _time < 0.0 ? 0.0 : _time;
-
-      if( !_p.isPlaying )
-      {
-        continue;
-      }
 
       //  pos, rot, sca はまとめられないかな？
       if( _p.position )
