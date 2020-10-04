@@ -1,9 +1,9 @@
 # Tweener
-> with NUXT.js and THREE.js
+> with THREE.js
 
 ## sample
 
-*Tweener.init();
+Tweener.init();
 
 Tweener.addTween( _mesh,
 {
