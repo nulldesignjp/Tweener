@@ -1,5 +1,5 @@
 # Tweener
-> with NUXT.js and THREE.js
+> with THREE.js
 
 ## sample code
 ```
