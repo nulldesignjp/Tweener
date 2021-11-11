@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.0.2
+  ver 2.0.5
 */
 
 export default class Tweener{
@@ -13,6 +13,7 @@ Tweener._props = {
   past: 0,
   loopKey: undefined
 };
+Tweener.useList = [];
 Tweener.init = () => 
 {
   if( !Tweener._props.isInit )
@@ -40,10 +41,21 @@ Tweener.dispose = () =>
     Tweener.useList = [];
   }
 }
-Tweener.useList = [];
-Tweener.addTween = ( instance, props ) =>
+Tweener.addTween = ( _instance, props ) =>
 {
-  Tweener.removeTween( instance );
+  //  Array
+  if( Array.isArray( _instance ) )
+  {
+    var len = _instance.length;
+    while( len )
+    {
+      len--;
+      Tweener.addTween( _instance[len], props );
+    }
+    return;
+  }
+
+  //  Tweener.removeTween( _instance );
 
   props.transition = props.transition == undefined ? 'linear' : props.transition;
   props.duration = props.duration == undefined ? 1.0 : props.duration;
@@ -51,63 +63,67 @@ Tweener.addTween = ( instance, props ) =>
   props.isPlaying = props.isPlaying == undefined ? true : props.isPlaying;
 
   let _p = {
-    instance: instance,
+    _id: new Date().getTime() + 'Z' + ~~( Math.random() * 10000000 ),
+    instance: _instance,
     transitionName: props.transition,
     transition: Tweener[props.transition],
     time: 0,
     duration: props.duration,
     delay: props.delay,
-    isPlaying: props.isPlaying
+    uniforms: props.uniforms,
+    isPlaying: props.isPlaying,
+    isStart: false
   }
 
+  if( props.onStart ){ _p.onStart = props.onStart; }
   if( props.onComplete ){ _p.onComplete = props.onComplete; }
 
   //  props
   if( props.position )
   {
     _p.position = {};
-    _p.position.start = instance.position.clone();
+    _p.position.start = _instance.position.clone();
     _p.position.target = props.position.clone();
   }
   if( props.focus )
   {
     _p.focus = {};
-    _p.focus.start = instance.focus.clone();
+    _p.focus.start = _instance.focus.clone();
     _p.focus.target = props.focus.clone();
   }
 
   if( props.rotation )
   {
     _p.rotation = {};
-    _p.rotation.start = instance.rotation.clone();
+    _p.rotation.start = _instance.rotation.clone();
     _p.rotation.target = props.rotation.clone();
   }
 
   if( props.scale )
   {
     _p.scale = {};
-    _p.scale.start = instance.scale.clone();
+    _p.scale.start = _instance.scale.clone();
     _p.scale.target = props.scale.clone();
   }
 
-  if( props.color && instance.material.color )
+  if( props.color && _instance.material.color )
   {
     _p.color = {};
-    _p.color.start = instance.material.color.clone();
+    _p.color.start = _instance.material.color.clone();
     _p.color.target = props.color.clone();
   }
 
-  if( props.opacity && instance.material.transparent && instance.material.opacity )
+  if( props.opacity && _instance.material.transparent && _instance.material.opacity )
   {
     _p.opacity = {};
-    _p.opacity.start = instance.material.opacity;
+    _p.opacity.start = _instance.material.opacity;
     _p.opacity.target = props.opacity;
   }
 
-  if( props.size && instance.material.size )
+  if( props.size && _instance.material.size )
   {
     _p.size = {};
-    _p.size.start = instance.material.size;
+    _p.size.start = _instance.material.size;
     _p.size.target = props.size;
   }
 
@@ -118,14 +134,27 @@ Tweener.addTween = ( instance, props ) =>
 Tweener.removeTween = ( _instance ) =>
 {
   let len = Tweener.useList.length;
-  while( len )
+  if( _instance.uuid != undefined )
   {
-    len--;
-    if( Tweener.useList[len].instance == _instance )
+    while( len )
     {
-      let _p = Tweener.useList.splice( len, 1 );
-      _p = null;
-      break;
+      len--;
+      if( Tweener.useList[len].instance == _instance )
+      {
+        let _p = Tweener.useList.splice( len, 1 );
+        _p = null;
+      }
+    }
+  } else {  
+    while( len )
+    {
+      len--;
+      if( Tweener.useList[len] == _instance )
+      {
+        let _p = Tweener.useList.splice( len, 1 );
+        _p = null;
+        break;
+      }
     }
   }
 }
@@ -199,7 +228,6 @@ Tweener._loop = () =>
   {
     len--;
     let _p = Tweener.useList[len]
-
     if( !_p.isPlaying )
     {
       continue;
@@ -210,6 +238,16 @@ Tweener._loop = () =>
       _p.time += _delta;
       let _time = _p.time - _p.delay;
       _time = _time < 0.0 ? 0.0 : _time;
+
+      //  onStart
+      if( !_p.isStart && _time > 0.0 )
+      {
+        _p.isStart = true;
+        if( _p.onStart != undefined )
+        {
+          _p.onStart( _p.instance );
+        }
+      }
 
       //  pos, rot, sca はまとめられないかな？
       if( _p.focus )
@@ -252,9 +290,8 @@ Tweener._loop = () =>
       {
         _p.instance.material.size = _p.transition( _time, _p.size.start, _p.size.target - _p.size.start, _p.duration );
       }
-
     } else {
-      Tweener.removeTween( _p.instance );
+      Tweener.removeTween( _p );
 
       //  pos, rot, sca はまとめられないかな？
       if( _p.focus )
@@ -298,7 +335,7 @@ Tweener._loop = () =>
         _p.instance.material.size = _p.size.target;
       }
 
-
+      //  onComplete
       if( _p.onComplete != undefined )
       {
         _p.onComplete( _p.instance );
