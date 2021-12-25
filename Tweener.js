@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.0.5
+  ver 2.0.6
 */
 
 export default class Tweener{
@@ -125,6 +125,13 @@ Tweener.addTween = ( _instance, props ) =>
     _p.size = {};
     _p.size.start = _instance.material.size;
     _p.size.target = props.size;
+  }
+
+  if( props.intensity && instance.intensity )
+  {
+    _p.intensity = {};
+    _p.intensity.start = instance.intensity;
+    _p.intensity.target = props.intensity;
   }
 
   Tweener.useList.push( _p );
@@ -256,18 +263,21 @@ Tweener._loop = () =>
         _p.instance.focus.y = _p.transition( _time, _p.focus.start.y, _p.focus.target.y - _p.focus.start.y, _p.duration );
         _p.instance.focus.z = _p.transition( _time, _p.focus.start.z, _p.focus.target.z - _p.focus.start.z, _p.duration );
       }
+
       if( _p.position )
       {
         _p.instance.position.x = _p.transition( _time, _p.position.start.x, _p.position.target.x - _p.position.start.x, _p.duration );
         _p.instance.position.y = _p.transition( _time, _p.position.start.y, _p.position.target.y - _p.position.start.y, _p.duration );
         _p.instance.position.z = _p.transition( _time, _p.position.start.z, _p.position.target.z - _p.position.start.z, _p.duration );
       }
+
       if( _p.rotation )
       {
         _p.instance.rotation.x = _p.transition( _time, _p.rotation.start.x, _p.rotation.target.x - _p.rotation.start.x, _p.duration );
         _p.instance.rotation.y = _p.transition( _time, _p.rotation.start.y, _p.rotation.target.y - _p.rotation.start.y, _p.duration );
         _p.instance.rotation.z = _p.transition( _time, _p.rotation.start.z, _p.rotation.target.z - _p.rotation.start.z, _p.duration );
       }
+
       if( _p.scale )
       {
         _p.instance.scale.x = _p.transition( _time, _p.scale.start.x, _p.scale.target.x - _p.scale.start.x, _p.duration );
@@ -282,14 +292,22 @@ Tweener._loop = () =>
         _p.instance.material.color.g = _p.transition( _time, _p.color.start.g, _p.color.target.g - _p.color.start.g, _p.duration );
         _p.instance.material.color.b = _p.transition( _time, _p.color.start.b, _p.color.target.b - _p.color.start.b, _p.duration );
       }
+
       if( _p.opacity )
       {
         _p.instance.material.opacity = _p.transition( _time, _p.opacity.start, _p.opacity.target - _p.opacity.start, _p.duration );
       }
+
       if( _p.size )
       {
         _p.instance.material.size = _p.transition( _time, _p.size.start, _p.size.target - _p.size.start, _p.duration );
       }
+
+      if( _p.intensity )
+      {
+        _p.instance.intensity = _p.transition( _time, _p.intensity.start, _p.intensity.target - _p.intensity.start, _p.duration );
+      }
+
     } else {
       Tweener.removeTween( _p );
 
@@ -300,18 +318,21 @@ Tweener._loop = () =>
         _p.instance.focus.y = _p.focus.target.y;
         _p.instance.focus.z = _p.focus.target.z;
       }
+
       if( _p.position )
       {
         _p.instance.position.x = _p.position.target.x;
         _p.instance.position.y = _p.position.target.y;
         _p.instance.position.z = _p.position.target.z;
       }
+
       if( _p.rotation )
       {
         _p.instance.rotation.x = _p.rotation.target.x;
         _p.instance.rotation.y = _p.rotation.target.y;
         _p.instance.rotation.z = _p.rotation.target.z;
       }
+
       if( _p.scale )
       {
         _p.instance.scale.x = _p.scale.target.x;
@@ -326,13 +347,20 @@ Tweener._loop = () =>
         _p.instance.material.color.g = _p.color.target.g;
         _p.instance.material.color.b = _p.color.target.b;
       }
+
       if( _p.opacity )
       {
         _p.instance.material.opacity = _p.opacity.target;
       }
+
       if( _p.size )
       {
         _p.instance.material.size = _p.size.target;
+      }
+      
+      if( _p.intensity )
+      {
+        _p.instance.intensity = _p.intensity.target;
       }
 
       //  onComplete
