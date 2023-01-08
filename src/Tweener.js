@@ -1,6 +1,8 @@
 /*
   Tweener.js
-  ver 2.0.6
+  ver 2.1.0
+
+  url: https://github.com/nulldesignjp/Tweener
 */
 
 export default class Tweener{
@@ -113,25 +115,47 @@ Tweener.addTween = ( _instance, props ) =>
     _p.color.target = props.color.clone();
   }
 
-  if( props.opacity && _instance.material.transparent && _instance.material.opacity )
+  if( Tweener.isNumber( props.opacity ) && _instance.material.transparent && _instance.material.opacity != undefined )
   {
     _p.opacity = {};
     _p.opacity.start = _instance.material.opacity;
     _p.opacity.target = props.opacity;
   }
 
-  if( props.size && _instance.material.size )
+  if( Tweener.isNumber( props.size ) && _instance.material.size != undefined )
   {
     _p.size = {};
     _p.size.start = _instance.material.size;
     _p.size.target = props.size;
   }
 
-  if( props.intensity && instance.intensity )
+  if( Tweener.isNumber( props.intensity ) && _instance.intensity != undefined )
   {
     _p.intensity = {};
-    _p.intensity.start = instance.intensity;
+    _p.intensity.start = _instance.intensity;
     _p.intensity.target = props.intensity;
+  }
+
+  if( props.uniforms && _instance.material.uniforms )
+  {
+    _p.uniforms = {}
+    _p.uniforms.start = {}
+    // _p.uniforms.start = _instance.material.uniforms;
+    for( var _key in props.uniforms )
+    {
+      _p.uniforms.start[_key ] = {}
+
+      if( Tweener.isNumber( _instance.material.uniforms[_key].value ) )
+      {
+        _p.uniforms.start[_key ].value = _instance.material.uniforms[_key].value;
+      } else if( _instance.material.uniforms[_key].value.isVector2 || _instance.material.uniforms[_key].value.isVector3 || _instance.material.uniforms[_key].value.isVector4 )
+      {
+        _p.uniforms.start[_key ].value = _instance.material.uniforms[_key].value.clone();
+      }
+
+    }
+    _p.uniforms.target = props.uniforms;
+
   }
 
   Tweener.useList.push( _p );
@@ -308,6 +332,35 @@ Tweener._loop = () =>
         _p.instance.intensity = _p.transition( _time, _p.intensity.start, _p.intensity.target - _p.intensity.start, _p.duration );
       }
 
+      if( _p.uniforms )
+      {
+        for( var _key in _p.uniforms.target )
+        {
+          if( Tweener.isNumber( _p.instance.material.uniforms[_key].value ) )
+          {
+            _p.instance.material.uniforms[_key].value = _p.transition( _time, _p.uniforms.start[_key].value, _p.uniforms.target[_key] - _p.uniforms.start[_key].value, _p.duration );
+          } else if( _p.instance.material.uniforms[_key].value.isVector2 )
+          {
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
+
+          } else if( _p.instance.material.uniforms[_key].value.isVector3 )
+          {
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
+            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].z - _p.uniforms.start[_key].value.z, _p.duration );
+
+          } else if( _p.instance.material.uniforms[_key].value.isVector4 )
+          {
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
+            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].z - _p.uniforms.start[_key].value.z, _p.duration );
+            _p.instance.material.uniforms[_key].value.w = _p.transition( _time, _p.uniforms.start[_key].value.w, _p.uniforms.target[_key].w - _p.uniforms.start[_key].value.w, _p.duration );
+          }
+
+        }
+      }
+
     } else {
       Tweener.removeTween( _p );
 
@@ -363,6 +416,14 @@ Tweener._loop = () =>
         _p.instance.intensity = _p.intensity.target;
       }
 
+      if( _p.uniforms )
+      {
+        for( var _key in _p.uniforms.target )
+        {
+          _p.instance.material.uniforms[_key].value = _p.uniforms.target[_key];
+        }
+      }
+
       //  onComplete
       if( _p.onComplete != undefined )
       {
@@ -371,8 +432,10 @@ Tweener._loop = () =>
     }
   }
 }
-
-
+Tweener.isNumber = (value) =>
+{
+  return ((typeof value === 'number') && (isFinite(value)));
+};
 
 
 /*
