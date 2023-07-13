@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.1.0
+  ver 2.2.0
 
   url: https://github.com/nulldesignjp/Tweener
 */
@@ -78,6 +78,7 @@ Tweener.addTween = ( _instance, props ) =>
   }
 
   if( props.onStart ){ _p.onStart = props.onStart; }
+  if( props.onUpdate ){ _p.onUpdate = props.onUpdate; }
   if( props.onComplete ){ _p.onComplete = props.onComplete; }
 
   //  props
@@ -278,7 +279,19 @@ Tweener._loop = () =>
         {
           _p.onStart( _p.instance );
         }
+
       }
+
+      //  onUpdate
+      if( _time > 0.0 )
+      {
+       if( _p.onUpdate != undefined )
+        {
+          _p.onUpdate( _p.instance );
+        }
+      }
+
+
 
       //  pos, rot, sca はまとめられないかな？
       if( _p.focus )
