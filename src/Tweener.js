@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.2.0
+  ver 2.2.1
 
   url: https://github.com/nulldesignjp/Tweener
 */
@@ -155,6 +155,7 @@ Tweener.addTween = ( _instance, props ) =>
       }
 
     }
+
     _p.uniforms.target = props.uniforms;
 
   }
@@ -347,11 +348,13 @@ Tweener._loop = () =>
 
       if( _p.uniforms )
       {
+
         for( var _key in _p.uniforms.target )
         {
+
           if( Tweener.isNumber( _p.instance.material.uniforms[_key].value ) )
           {
-            _p.instance.material.uniforms[_key].value = _p.transition( _time, _p.uniforms.start[_key].value, _p.uniforms.target[_key] - _p.uniforms.start[_key].value, _p.duration );
+            _p.instance.material.uniforms[_key].value = _p.transition( _time, _p.uniforms.start[_key].value, _p.uniforms.target[_key].value - _p.uniforms.start[_key].value, _p.duration );
           } else if( _p.instance.material.uniforms[_key].value.isVector2 )
           {
             _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
@@ -370,6 +373,8 @@ Tweener._loop = () =>
             _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].z - _p.uniforms.start[_key].value.z, _p.duration );
             _p.instance.material.uniforms[_key].value.w = _p.transition( _time, _p.uniforms.start[_key].value.w, _p.uniforms.target[_key].w - _p.uniforms.start[_key].value.w, _p.duration );
           }
+
+          _p.instance.material.uniformsNeesdsUpdate = true;
 
         }
       }
@@ -433,7 +438,8 @@ Tweener._loop = () =>
       {
         for( var _key in _p.uniforms.target )
         {
-          _p.instance.material.uniforms[_key].value = _p.uniforms.target[_key];
+          _p.instance.material.uniforms[_key].value = _p.uniforms.target[_key].value;
+          _p.instance.material.uniformsNeesdsUpdate = true;
         }
       }
 
