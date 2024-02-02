@@ -5,7 +5,7 @@
 ```
 Tweener.init();
 
-Tweener.addTween( _mesh,  
+let _tw = Tweener.addTween( _mesh,  
 {   
   position: new THREE.Vector3( _px, _py, _pz  ),  
   rotation: new THREE.Vector3( _rx, _ry, _rz ),  
@@ -46,10 +46,17 @@ props
   transition: String  
   duration: Float
   delay: Float
+  uniforms : Object
+  onStart: Function (CALLBACK)  
   onComplete: Function (CALLBACK)  
+  onUpdate: Function (CALLBACK)  
   
 
 **```Tweener.removeTween( _instance:Object3D );```**
+
+指定したObject3Dにかかわる全てのTweenを削除
+
+**```Tweener.removeTween( _tw );```**
 
 指定したObject3DにかかわるTweenを削除
 

@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.2.1
+  ver 2.3.0
 
   url: https://github.com/nulldesignjp/Tweener
 */
@@ -57,29 +57,23 @@ Tweener.addTween = ( _instance, props ) =>
     return;
   }
 
-  //  Tweener.removeTween( _instance );
-
-  props.transition = props.transition == undefined ? 'linear' : props.transition;
-  props.duration = props.duration == undefined ? 1.0 : props.duration;
-  props.delay = props.delay == undefined ? 0.0 : props.delay;
-  props.isPlaying = props.isPlaying == undefined ? true : props.isPlaying;
+  props.transition = props.transition || 'linear';
 
   let _p = {
-    _id: new Date().getTime() + 'Z' + ~~( Math.random() * 10000000 ),
+    _id: new Date().getTime() + 'I.' + _instance.uuid + 'Z.' + ~~( Math.random() * 10000000 ),
     instance: _instance,
     transitionName: props.transition,
-    transition: Tweener[props.transition],
-    time: 0,
-    duration: props.duration,
-    delay: props.delay,
+    transition: Tweener[ props.transition ],
+    time: 0.0,
+    duration: props.duration || 1.0,
+    delay: props.delay || 0.0,
     uniforms: props.uniforms,
-    isPlaying: props.isPlaying,
-    isStart: false
+    isPlaying: props.isPlaying || true,
+    isStart: false,
+    onStart: props.onStart || undefined,
+    onUpdate: props.onUpdate || undefined,
+    onComplete: props.onComplete || undefined
   }
-
-  if( props.onStart ){ _p.onStart = props.onStart; }
-  if( props.onUpdate ){ _p.onUpdate = props.onUpdate; }
-  if( props.onComplete ){ _p.onComplete = props.onComplete; }
 
   //  props
   if( props.position )
@@ -88,6 +82,7 @@ Tweener.addTween = ( _instance, props ) =>
     _p.position.start = _instance.position.clone();
     _p.position.target = props.position.clone();
   }
+
   if( props.focus )
   {
     _p.focus = {};
@@ -123,6 +118,7 @@ Tweener.addTween = ( _instance, props ) =>
     _p.opacity.target = props.opacity;
   }
 
+  //  lighting
   if( Tweener.isNumber( props.size ) && _instance.material.size != undefined )
   {
     _p.size = {};
@@ -130,6 +126,7 @@ Tweener.addTween = ( _instance, props ) =>
     _p.size.target = props.size;
   }
 
+  //  lighting
   if( Tweener.isNumber( props.intensity ) && _instance.intensity != undefined )
   {
     _p.intensity = {};
@@ -137,6 +134,7 @@ Tweener.addTween = ( _instance, props ) =>
     _p.intensity.target = props.intensity;
   }
 
+  //  shader
   if( props.uniforms && _instance.material.uniforms )
   {
     _p.uniforms = {}
@@ -153,7 +151,6 @@ Tweener.addTween = ( _instance, props ) =>
       {
         _p.uniforms.start[_key ].value = _instance.material.uniforms[_key].value.clone();
       }
-
     }
 
     _p.uniforms.target = props.uniforms;
@@ -169,6 +166,7 @@ Tweener.removeTween = ( _instance ) =>
   let len = Tweener.useList.length;
   if( _instance.uuid != undefined )
   {
+    // Remove Mesh and Light directly.
     while( len )
     {
       len--;
@@ -178,11 +176,11 @@ Tweener.removeTween = ( _instance ) =>
         _p = null;
       }
     }
-  } else {  
+  } else {
     while( len )
     {
       len--;
-      if( Tweener.useList[len] == _instance )
+      if( Tweener.useList[len]._id == _instance._id )
       {
         let _p = Tweener.useList.splice( len, 1 );
         _p = null;
@@ -357,21 +355,21 @@ Tweener._loop = () =>
             _p.instance.material.uniforms[_key].value = _p.transition( _time, _p.uniforms.start[_key].value, _p.uniforms.target[_key].value - _p.uniforms.start[_key].value, _p.duration );
           } else if( _p.instance.material.uniforms[_key].value.isVector2 )
           {
-            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
-            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].value.x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].value.y - _p.uniforms.start[_key].value.y, _p.duration );
 
           } else if( _p.instance.material.uniforms[_key].value.isVector3 )
           {
-            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
-            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
-            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].z - _p.uniforms.start[_key].value.z, _p.duration );
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].value.x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].value.y - _p.uniforms.start[_key].value.y, _p.duration );
+            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].value.z - _p.uniforms.start[_key].value.z, _p.duration );
 
           } else if( _p.instance.material.uniforms[_key].value.isVector4 )
           {
-            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].x - _p.uniforms.start[_key].value.x, _p.duration );
-            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].y - _p.uniforms.start[_key].value.y, _p.duration );
-            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].z - _p.uniforms.start[_key].value.z, _p.duration );
-            _p.instance.material.uniforms[_key].value.w = _p.transition( _time, _p.uniforms.start[_key].value.w, _p.uniforms.target[_key].w - _p.uniforms.start[_key].value.w, _p.duration );
+            _p.instance.material.uniforms[_key].value.x = _p.transition( _time, _p.uniforms.start[_key].value.x, _p.uniforms.target[_key].value.x - _p.uniforms.start[_key].value.x, _p.duration );
+            _p.instance.material.uniforms[_key].value.y = _p.transition( _time, _p.uniforms.start[_key].value.y, _p.uniforms.target[_key].value.y - _p.uniforms.start[_key].value.y, _p.duration );
+            _p.instance.material.uniforms[_key].value.z = _p.transition( _time, _p.uniforms.start[_key].value.z, _p.uniforms.target[_key].value.z - _p.uniforms.start[_key].value.z, _p.duration );
+            _p.instance.material.uniforms[_key].value.w = _p.transition( _time, _p.uniforms.start[_key].value.w, _p.uniforms.target[_key].value.w - _p.uniforms.start[_key].value.w, _p.duration );
           }
 
           _p.instance.material.uniformsNeesdsUpdate = true;
