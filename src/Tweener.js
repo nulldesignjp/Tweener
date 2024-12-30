@@ -1,6 +1,6 @@
 /*
   Tweener.js
-  ver 2.3.0
+  ver 2.3.1
 
   url: https://github.com/nulldesignjp/Tweener
 */
